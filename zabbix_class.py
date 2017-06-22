@@ -45,7 +45,7 @@ class Zabbix:
         })
         return self.get_data(data)
 
-    def tempaltes_get(self):
+    def tempaltes_get(self,name):
         '''获取默认模板的信息'''
         data = json.dumps({
             "jsonrpc": "2.0",
@@ -55,7 +55,7 @@ class Zabbix:
                     "templateid"
                 ],
                 "filter":{
-                    "name":["Basis"]
+                    "name":["{name}".format(name=name)]
                 }
             },
             "id": 1,
@@ -101,7 +101,6 @@ class Action_zabbix:
     def add_monitor(self):
         group_list = self.zabbix.hostgroup_get()["result"]
         group_id_list =[]
-        print(group_list)
         for group_info in group_list:
             print(group_info["groupid"],'\t',group_info["name"])
             group_id_list.append(group_info["groupid"])
@@ -111,7 +110,7 @@ class Action_zabbix:
                 break
             else:
                 pass
-        tempaltes_id = self.zabbix.tempaltes_get()["result"][0]["templateid"]
+        tempaltes_id = self.zabbix.tempaltes_get(settings.tempaltes_name)["result"][0]["templateid"]
         with open("ipaddr",'r') as ip_host:
             for line in ip_host:
                 host = line.split(":")[0]
